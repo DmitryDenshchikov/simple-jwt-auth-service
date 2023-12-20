@@ -1,0 +1,37 @@
+plugins {
+	id "java"
+	id "org.springframework.boot" version "3.2.0"
+	id "io.spring.dependency-management" version "1.1.4"
+}
+
+group = "denshchikov.dmitry"
+version = "0.0.1-SNAPSHOT"
+
+java {
+	sourceCompatibility = "21"
+}
+
+repositories {
+	mavenCentral()
+}
+
+ext {
+	jsonwebtokenVersion = "0.12.3"
+}
+
+dependencies {
+	implementation "org.springframework.boot:spring-boot-starter-security"
+	implementation "org.springframework.boot:spring-boot-starter-web"
+
+	// JSON Web Token
+	implementation "io.jsonwebtoken:jjwt-api:$jsonwebtokenVersion"
+	runtimeOnly "io.jsonwebtoken:jjwt-impl:$jsonwebtokenVersion"
+	runtimeOnly "io.jsonwebtoken:jjwt-jackson:$jsonwebtokenVersion"
+
+	testImplementation "org.springframework.boot:spring-boot-starter-test"
+	testImplementation "org.springframework.security:spring-security-test"
+}
+
+tasks.named("test") {
+	useJUnitPlatform()
+}
