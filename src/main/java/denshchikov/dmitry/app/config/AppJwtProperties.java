@@ -1,4 +1,4 @@
-package denshchikov.dmitry.simpleeventmanagementservice.config;
+package denshchikov.dmitry.app.config;
 
 import io.jsonwebtoken.Jwts;
 import jakarta.validation.constraints.Min;

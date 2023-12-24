@@ -1,4 +1,4 @@
-package denshchikov.dmitry.simpleeventmanagementservice;
+package denshchikov.dmitry.app;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,6 +1,6 @@
-package denshchikov.dmitry.simpleeventmanagementservice.service;
+package denshchikov.dmitry.app.service;
 
-import denshchikov.dmitry.simpleeventmanagementservice.config.AppJwtProperties;
+import denshchikov.dmitry.app.config.AppJwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;

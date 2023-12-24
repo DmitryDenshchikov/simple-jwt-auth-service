@@ -1,6 +1,6 @@
-package denshchikov.dmitry.simpleeventmanagementservice;
+package denshchikov.dmitry.app;
 
-import denshchikov.dmitry.simpleeventmanagementservice.config.AppJwtProperties;
+import denshchikov.dmitry.app.config.AppJwtProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
