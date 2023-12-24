@@ -1,1 +1,5 @@
-
+app:
+  jwt:
+    secret: ${APP_JWT_SECRET}
+    issuer: ${APP_JWT_ISSUER}
+    expiresIn: ${APP_JWT_EXPIRES_IN} # in milliseconds
