@@ -1,6 +1,5 @@
 package denshchikov.dmitry.app.config;
 
-import io.jsonwebtoken.Jwts;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
@@ -27,8 +26,7 @@ public class AppJwtProperties {
     private int expiresIn;
 
     public SecretKey getKey() {
-        var algorithm = Jwts.SIG.HS256.getId();
-        return new SecretKeySpec(secret.getBytes(), algorithm);
+        return new SecretKeySpec(secret.getBytes(), "HmacSHA256");
     }
 
 }
