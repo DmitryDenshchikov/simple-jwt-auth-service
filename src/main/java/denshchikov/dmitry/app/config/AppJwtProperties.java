@@ -22,11 +22,14 @@ public class AppJwtProperties {
     @NotEmpty
     private String issuer;
 
+    @NotEmpty
+    private String algorithm;
+
     @Min(1)
     private int expiresIn;
 
     public SecretKey getKey() {
-        return new SecretKeySpec(secret.getBytes(), "HmacSHA256");
+        return new SecretKeySpec(secret.getBytes(), algorithm);
     }
 
 }
