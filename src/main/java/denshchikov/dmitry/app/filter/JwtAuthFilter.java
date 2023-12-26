@@ -1,6 +1,8 @@
 package denshchikov.dmitry.app.filter;
 
 import denshchikov.dmitry.app.service.JwtService;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,7 +17,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collection;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
@@ -27,35 +29,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-
-        var authorisation = request.getHeader(AUTHORIZATION);
-
-        if (authorisation == null) {
-            throw new ServletRequestBindingException("'%s' header is missing".formatted(AUTHORIZATION));
-        }
-
-        if (!authorisation.startsWith(BEARER_PREFIX)) {
-            var msg = "Malformed '%s' header. It should start with '%s'".formatted(AUTHORIZATION, BEARER_PREFIX);
-            throw new ServletRequestBindingException(msg);
-        }
-
-        var jwt = authorisation.substring(BEARER_PREFIX.length());
-
-        if (!StringUtils.hasText(jwt)) {
-            throw new ServletRequestBindingException("JWT is not present in the request");
-        }
-
+        var authorization = extractAuthorizationHeader(request);
+        var jwt = extractJwt(authorization);
         var claims = jwtService.getClaims(jwt);
         var principal = claims.get("principal");
-        var roles = claims.get("roles", String[].class);
-
-        var authorities = Arrays.stream(roles)
-                .map(SimpleGrantedAuthority::new)
-                .toList();
-
+        var authorities = extractAuthorities(claims);
         var auth = new UsernamePasswordAuthenticationToken(principal, null, authorities);
 
         SecurityContextHolder.getContext().setAuthentication(auth);
@@ -67,6 +47,50 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) {
         var requestURI = request.getRequestURI();
         return "/auth/token".equals(requestURI);
+    }
+
+    private String extractAuthorizationHeader(HttpServletRequest request) throws ServletRequestBindingException {
+        var authorisation = request.getHeader(AUTHORIZATION);
+
+        if (authorisation == null) {
+            throw new ServletRequestBindingException("'%s' header is missing".formatted(AUTHORIZATION));
+        }
+
+        if (!authorisation.startsWith(BEARER_PREFIX)) {
+            var msg = "Malformed '%s' header. It should start with '%s'".formatted(AUTHORIZATION, BEARER_PREFIX);
+            throw new ServletRequestBindingException(msg);
+        }
+
+        return authorisation;
+    }
+
+    private Collection<SimpleGrantedAuthority> extractAuthorities(Claims claims) {
+        var roles = claims.get("roles", Collection.class);
+
+        if (roles == null) {
+            throw new JwtException("Roles are not present in the token");
+        }
+
+        if (roles instanceof Collection<?> r) {
+            return r.stream()
+                    .filter(String.class::isInstance)
+                    .map(String.class::cast)
+                    .map(SimpleGrantedAuthority::new)
+                    .toList();
+        } else {
+            throw new JwtException("Roles should be a string collection, but the actual type is %s"
+                    .formatted(roles.getClass().getCanonicalName()));
+        }
+    }
+
+    private String extractJwt(String authorization) throws ServletRequestBindingException {
+        var jwt = authorization.substring(BEARER_PREFIX.length());
+
+        if (!StringUtils.hasText(jwt)) {
+            throw new ServletRequestBindingException("JWT is not present in the request");
+        }
+
+        return jwt;
     }
 
 }
