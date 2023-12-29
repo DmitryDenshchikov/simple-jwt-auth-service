@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,9 +32,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        var authorization = extractAuthorizationHeader(request);
-        var jwt = extractJwt(authorization);
-        var claims = jwtService.getClaims(jwt);
+        Claims claims;
+
+        try {
+            var authorization = extractAuthorizationHeader(request);
+            var jwt = extractJwt(authorization);
+            claims = jwtService.getClaims(jwt);
+        } catch (ServletRequestBindingException | JwtException e) {
+            logger.debug(e.getMessage());
+            response.sendError(HttpStatus.FORBIDDEN.value());
+            return;
+        }
+
         var principal = claims.get("principal");
         var authorities = extractAuthorities(claims);
         var auth = new UsernamePasswordAuthenticationToken(principal, null, authorities);
