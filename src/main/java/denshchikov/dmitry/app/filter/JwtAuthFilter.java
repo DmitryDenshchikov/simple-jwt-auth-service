@@ -19,6 +19,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
@@ -78,7 +79,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         var roles = claims.get("roles", Collection.class);
 
         if (roles == null) {
-            throw new JwtException("Roles are not present in the token");
+            return List.of();
         }
 
         if (roles instanceof Collection<?> r) {
