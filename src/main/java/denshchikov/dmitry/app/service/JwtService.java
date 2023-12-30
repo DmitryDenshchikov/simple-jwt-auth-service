@@ -19,6 +19,7 @@ public class JwtService {
 
     private final AppJwtProperties appJwtProperties;
 
+
     public String generateJWT(Map<String, Object> claims) {
         var key = appJwtProperties.getKey();
         var algorithm = appJwtProperties.getAlgorithm();
