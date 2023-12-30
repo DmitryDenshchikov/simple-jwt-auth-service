@@ -1,9 +1,11 @@
 package denshchikov.dmitry.app.service;
 
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import denshchikov.dmitry.app.config.AppJwtProperties;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtParser;
-import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -15,26 +17,40 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class JwtService {
 
-    private final JwtParser jwtParser;
     private final AppJwtProperties appJwtProperties;
 
-    public Claims getClaims(String jwt) {
-        return jwtParser.parseSignedClaims(jwt).getPayload();
+    public String generateJWT(Map<String, Object> claims) {
+        var key = appJwtProperties.getKey();
+        var algorithm = appJwtProperties.getAlgorithm();
+
+        var header = new JWSHeader(algorithm);
+        var claimsSet = buildClaimsSet(claims);
+
+        var jwt = new SignedJWT(header, claimsSet);
+
+        try {
+            var signer = new MACSigner(key);
+            jwt.sign(signer);
+        } catch (JOSEException e) {
+            throw new RuntimeException("Unable to generate JWT", e);
+        }
+
+        return jwt.serialize();
     }
 
-    public String generateJWT(Map<String, Object> claims) {
+    private JWTClaimsSet buildClaimsSet(Map<String, Object> claims) {
         var issuer = appJwtProperties.getIssuer();
-        var key = appJwtProperties.getKey();
         var issuedAt = Instant.now();
-        var expiration = issuedAt.plusMillis(appJwtProperties.getExpiresIn());
+        var expirationTime = issuedAt.plusMillis(appJwtProperties.getExpiresIn());
 
-        return Jwts.builder()
+        var builder = new JWTClaimsSet.Builder()
                 .issuer(issuer)
-                .claims(claims)
-                .issuedAt(Date.from(issuedAt))
-                .expiration(Date.from(expiration))
-                .signWith(key)
-                .compact();
+                .issueTime(Date.from(issuedAt))
+                .expirationTime(Date.from(expirationTime));
+
+        claims.forEach(builder::claim);
+
+        return builder.build();
     }
 
 }

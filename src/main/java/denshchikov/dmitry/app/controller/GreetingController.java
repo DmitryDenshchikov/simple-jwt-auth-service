@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class GreetingController {
 
     @GetMapping
-    @PreAuthorize("hasAuthority('ROLE_GUEST')")
+    @PreAuthorize("hasAuthority('SCOPE_GUEST')")
     public String greet(Authentication authentication) {
         return "Hello, %s. You have next permissions: %s"
                 .formatted(authentication.getName(), authentication.getAuthorities());
