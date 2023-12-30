@@ -15,10 +15,6 @@ repositories {
     mavenCentral()
 }
 
-ext {
-    jsonwebtokenVersion = "0.12.3"
-}
-
 dependencies {
     // Spring
     implementation "org.springframework.boot:spring-boot-starter-web"
