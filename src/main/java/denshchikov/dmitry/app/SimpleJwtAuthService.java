@@ -7,10 +7,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 
 @SpringBootApplication
 @EnableConfigurationProperties(AppJwtProperties.class)
-public class SimpleEventManagementServiceApplication {
+public class SimpleJwtAuthService {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SimpleEventManagementServiceApplication.class, args);
+		SpringApplication.run(SimpleJwtAuthService.class, args);
 	}
 
 }
