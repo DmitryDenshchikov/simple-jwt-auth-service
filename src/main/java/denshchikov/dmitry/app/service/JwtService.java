@@ -42,7 +42,7 @@ public class JwtService {
     private JWTClaimsSet buildClaimsSet(Map<String, Object> claims) {
         var issuer = appJwtProperties.getIssuer();
         var issuedAt = Instant.now();
-        var expirationTime = issuedAt.plusMillis(appJwtProperties.getExpiresIn());
+        var expirationTime = issuedAt.plus(appJwtProperties.getExpiresIn());
 
         var builder = new JWTClaimsSet.Builder()
                 .issuer(issuer)

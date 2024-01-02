@@ -2,15 +2,16 @@ package denshchikov.dmitry.app.config;
 
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.OctetSequenceKey;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.time.DurationMin;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 import javax.crypto.SecretKey;
+import java.time.Duration;
 
 @Getter
 @Setter
@@ -27,8 +28,9 @@ public class AppJwtProperties {
     @NotNull
     private JWSAlgorithm algorithm;
 
-    @Min(1)
-    private int expiresIn;
+    @NotNull
+    @DurationMin(seconds = 1)
+    private Duration expiresIn;
 
     public void setAlgorithm(String algorithm) {
         this.algorithm = JWSAlgorithm.parse(algorithm);

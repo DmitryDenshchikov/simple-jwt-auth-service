@@ -3,4 +3,4 @@ app:
     key: ${APP_JWT_SECRET}
     algorithm: ${APP_JWT_ALGORITHM}
     issuer: ${APP_JWT_ISSUER}
-    expiresIn: ${APP_JWT_EXPIRES_IN} # in milliseconds
+    expiresIn: ${APP_JWT_EXPIRES_IN}
