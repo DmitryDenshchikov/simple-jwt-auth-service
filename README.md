@@ -1,0 +1,1 @@
+### This project was created for the article [Spring Boot 3 + JWT Authorization based on a secret key](https://medium.com/@HereAndBeyond/spring-boot-3-jwt-authorization-based-on-a-secret-key-ababbb3a3350)
